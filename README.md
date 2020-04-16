@@ -1,2 +1,2 @@
 # RepairManager
-A MCDR plugin
+A MCDR plugin to manage machine repairment
