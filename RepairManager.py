@@ -82,11 +82,11 @@ def show_detail(name):
     server.reply(info, "名称 : " + name)
     server.reply(info, "注释 : " + comment)
     if dim == 0:
-        server.reply(info, "坐标 : §2主世界§r[x:{} ,y:{} ,z:{}]".format(pos_x, pos_y, pos_z))
+        server.reply(info, "坐标 : §2主世界§r [x:{} ,y:{} ,z:{}]".format(pos_x, pos_y, pos_z))
     elif dim == -1:
-        server.reply(info, "坐标 : §4地狱§r[x:{} ,y:{} ,z:{}]".format(pos_x, pos_y, pos_z))
+        server.reply(info, "坐标 : §4地狱§r [x:{} ,y:{} ,z:{}]".format(pos_x, pos_y, pos_z))
     elif dim == 1:
-        server.reply(info, "坐标 : §5末地§r[x:{} ,y:{} ,z:{}]".format(pos_x, pos_y, pos_z))
+        server.reply(info, "坐标 : §5末地§r [x:{} ,y:{} ,z:{}]".format(pos_x, pos_y, pos_z))
 
     if fixed:
         server.reply(info, "是否修复 : §2True§r")
@@ -105,6 +105,15 @@ def show_list(server, player):
         output.set_click_command("!!repair detail " + data[i]["name"])
         st.show_to_player(server, player, output)
         # server.tell(info.player, " - " + data[i]["name"] + "   §7" + data[i]["comment"])
+
+def add_successful_info(dim, pos_x, pos_y, pos_z):
+    if dim == 0:
+        server.reply(info, "已在 §2主世界§r [x:{} ,y:{} ,z:{}] 创建了报修".format(pos_x, pos_y, pos_z))
+    elif dim == -1:
+        server.reply(info, "已在 §4地狱§r [x:{} ,y:{} ,z:{}] 创建了报修".format(pos_x, pos_y, pos_z))
+    elif dim == 1:
+        server.reply(info, "已在 §5末地§r [x:{} ,y:{} ,z:{}] 创建了报修".format(pos_x, pos_y, pos_z))
+
 
 def on_load(server,module):
     server.add_help_message("一个用于报修机器故障的插件")
@@ -138,32 +147,40 @@ def on_info(server, info):
 
     if splited_content[1] == "add":
         if len(splited_content) == 8:
-            if splited_content[4].isdigit() and splited_content[5].isdigit() and \
-                    splited_content[6].isdigit():
-                if splited_content[7] == "1" or splited_content[7] == "-1" or splited_content[7] == "0":
-                    # Format Correct
-                    name = splited_content[2]
-                    comment = splited_content[3]
-                    pos_x = float(splited_content[4])
-                    pos_y = float(splited_content[5])
-                    pos_z = float(splited_content[6])
-                    dim = int(splited_content[7])
-                    fixed = False
-                    add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed)
-                    server.reply(info, "§a数据添加成功§r")
-                else:
-                    server.reply(info, format_error)
+            if splited_content[4].strip('-').isdigit() and splited_content[5].strip('-').isdigit() and \
+                    splited_content[6].strip('-').isdigit() and splited_content[7].strip('-').isdigit():
+                # Format Correct
+                name = splited_content[2]
+                comment = splited_content[3]
+                pos_x = int(splited_content[4])
+                pos_y = int(splited_content[5])
+                pos_z = int(splited_content[6])
+                dim = int(splited_content[7])
+                fixed = False
+                add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed)
+                add_successful_info(dim, pos_x, pos_y, pos_z)
 
             else:
                 server.reply(info, format_error)
+                print("坐标错误")
                 return
         elif len(splited_content) == 5:
             if splited_content[4] != "here":
                 server.reply(info, format_error)
             else:
                 # Format Correct
-                server.reply("here")
-
+                # here
+                PlayerInfoAPI = server.get_plugin_instance('PlayerInfoAPI')
+                result = PlayerInfoAPI.getPlayerInfo(server, info.player)
+                name = splited_content[2]
+                comment = splited_content[3]
+                dim = result["Dimension"]
+                pos_x = int(result["Pos"][0])
+                pos_y = int(result["Pos"][1])
+                pos_z = int(result["Pos"][2])
+                fixed = False
+                add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed)
+                add_successful_info(dim, pos_x, pos_y, pos_z)
         else:
             server.reply(info, format_error)
 
