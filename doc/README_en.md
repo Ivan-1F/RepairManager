@@ -22,5 +22,4 @@ A [MCDReforged](https://github.com/Fallen-Breath/MCDReforged/) plugin to manage 
  - `!!repair unfix <name>` mark `<name>` unfixed
  - `!!repair rename <name> <new_name>` rename `<name>` to `<new_name>`
  - `!!repair modify <name> <comment>` edit the comment of `<name>` to `<comment>`
- [English](https://github.com/wyf0762/RepairManager/blob/master/doc/README_en.md)
 
