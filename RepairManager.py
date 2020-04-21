@@ -93,18 +93,46 @@ def show_detail(name):
     else:
         server.reply(info, "是否修复 : §4False§r")
 
-
-def show_list(server, player):
+def show_fixed_list():
+    global global_server
+    global global_info
     global data
+    server = global_server
+    info = global_info
+    player = info.player
 
     load_data()
+
     for i in range(0, len(data)):
+        if(data[i]["fixed"] == False):
+            continue    # 未被修复
         output = st.SText(" - " + data[i]["name"] + "   §7" + data[i]["comment"])
-        # output = st.SText(" - " + data[i]["name"], color=st.SColor.red)
         output.hover_text = st.SText("点击查看任务详细")
         output.set_click_command("!!repair detail " + data[i]["name"])
         st.show_to_player(server, player, output)
-        # server.tell(info.player, " - " + data[i]["name"] + "   §7" + data[i]["comment"])
+
+def show_list():
+    global data
+    load_data()
+
+    global global_server
+    global global_info
+    server = global_server
+    info = global_info
+
+    player = info.player
+
+    for i in range(0, len(data)):
+        if(data[i]["fixed"] == True):
+            continue    # 已被修复
+        output = st.SText(" - " + data[i]["name"] + "   §7" + data[i]["comment"])
+        output.hover_text = st.SText("点击查看任务详细")
+        output.set_click_command("!!repair detail " + data[i]["name"])
+        st.show_to_player(server, player, output)
+
+    show_fixed_list = st.SText("显示已修复的报修", color=st.SColor.gray)
+    show_fixed_list.set_click_command("!!repair fixed")
+    st.show_to_player(server, player, show_fixed_list)
 
 def add_successful_info(dim, pos_x, pos_y, pos_z):
     global global_server
@@ -112,7 +140,6 @@ def add_successful_info(dim, pos_x, pos_y, pos_z):
 
     server = global_server
     info = global_info
-
     if dim == 0:
         server.reply(info, "已在 §2主世界§r [x:{} ,y:{} ,z:{}] 创建了报修".format(pos_x, pos_y, pos_z))
     elif dim == -1:
@@ -169,7 +196,7 @@ def on_info(server, info):
         return
 
     if len(splited_content) == 1:
-        show_list(server, player)
+        show_list()
         return
     
     if splited_content[1] == "help":
@@ -218,10 +245,17 @@ def on_info(server, info):
                 pos_z = int(result["Pos"][2])
                 fixed = False
                 add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed)
+                global_info = info
                 add_successful_info(dim, pos_x, pos_y, pos_z)
         else:
             server.reply(info, format_error)
         return
+
+    if splited_content[1] == "fixed":
+        if len(splited_content) != 2:
+            server.reply(info, format_error)
+            return
+        show_fixed_list()
 
     if splited_content[1] == "fix":
         if len(splited_content) != 3:
