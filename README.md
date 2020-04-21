@@ -11,7 +11,7 @@
 
 # 使用
 
- - ` - !!repair` 显示报修列表（未修复）
+ - `!!repair` 显示报修列表（未修复）
  - `!!repair fixed` 显示报修列表（已修复）
  - `!!repair help` 显示帮助信息
  - `!!repair add <name> <comment> here` 在当前位置添加一个名为name的报修
