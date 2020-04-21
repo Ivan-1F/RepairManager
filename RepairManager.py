@@ -199,6 +199,21 @@ def rename(name, newname):
             return
     server.reply(info, "§c未找到§6" + name)
 
+def modify(name, comment):
+    global global_server
+    global global_info
+    global data
+    load_data()
+    server = global_server
+    info = global_info
+    for i in range(0, len(data)):
+        if (data[i]["name"] == name):
+            data[i]["comment"] = comment
+            server.reply(info, "§a成功将§6" + name + "§a的注释改为§6" + comment + "§r")
+            save_data()
+            return
+    server.reply(info, "§c未找到§6" + name)
+
 
 def on_load(server,module):
     server.add_help_message(Prefix, "一个用于报修机器故障的插件")
@@ -296,4 +311,11 @@ def on_info(server, info):
             server.reply(info, format_error)
             return
         rename(splited_content[2], splited_content[3])
+        return
+
+    if splited_content[1] == "modify":
+        if len(splited_content) != 4:
+            server.reply(info, format_error)
+            return
+        modify(splited_content[2], splited_content[3])
         return
