@@ -122,7 +122,35 @@ def add_successful_info(dim, pos_x, pos_y, pos_z):
 
 def fix(name):
     global global_server
+    global global_info
+    global data
+    load_data()
     server = global_server
+    info = global_info
+    for i in range(0, len(data)):
+        if(data[i]["name"] == name):
+            if(data[i]["fixed"] == False):
+                data[i]["fixed"] = True
+                save_data()
+                server.reply(info, "§a已将这项报修标记为已修复！§r")
+            else:
+                server.reply(info, "§c这项报修已经被修复！§r")
+
+def unfix(name):
+    global global_server
+    global global_info
+    global data
+    load_data()
+    server = global_server
+    info = global_info
+    for i in range(0, len(data)):
+        if(data[i]["name"] == name):
+            if(data[i]["fixed"] == True):
+                data[i]["fixed"] = False
+                save_data()
+                server.reply(info, "§a已将这项报修标记为未修复！§r")
+            else:
+                server.reply(info, "§c这项报修还未被修复！§r")
 
 
 def on_load(server,module):
@@ -193,5 +221,18 @@ def on_info(server, info):
                 add_successful_info(dim, pos_x, pos_y, pos_z)
         else:
             server.reply(info, format_error)
+        return
 
+    if splited_content[1] == "fix":
+        if len(splited_content) != 3:
+            server.reply(info, format_error)
+            return
+        fix(splited_content[2])
+        return
+
+    if splited_content[1] == "unfix":
+        if len(splited_content) != 3:
+            server.reply(info, format_error)
+            return
+        unfix(splited_content[2])
         return
