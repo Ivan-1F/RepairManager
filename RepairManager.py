@@ -105,6 +105,8 @@ def show_fixed_list():
 
     load_data()
 
+    flag = 1
+
     for i in range(0, len(data)):
         if(data[i]["fixed"] == False):
             continue    # 未被修复
@@ -112,6 +114,10 @@ def show_fixed_list():
         output.hover_text = st.SText("点击查看任务详细")
         output.set_click_command("!!repair detail " + data[i]["name"])
         st.show_to_player(server, player, output)
+        flag = 0
+
+    if (flag):
+        server.reply(info, "§c没有已完成的报修！§r")
 
 def show_list():
     global data
@@ -124,6 +130,8 @@ def show_list():
 
     player = info.player
 
+    flag = 1
+
     for i in range(0, len(data)):
         if(data[i]["fixed"] == True):
             continue    # 已被修复
@@ -131,8 +139,13 @@ def show_list():
         output.hover_text = st.SText("点击查看任务详细")
         output.set_click_command("!!repair detail " + data[i]["name"])
         st.show_to_player(server, player, output)
+        flag = 0
+
+    if(flag):
+        server.reply(info, "§c没有未完成的报修！§r")
 
     show_fixed_list = st.SText("显示已修复的报修", color=st.SColor.gray)
+    show_fixed_list.styles = [st.SStyle.bold, st.SStyle.underlined]
     show_fixed_list.set_click_command("!!repair fixed")
     st.show_to_player(server, player, show_fixed_list)
 

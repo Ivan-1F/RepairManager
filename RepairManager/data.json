@@ -1,18 +1,1 @@
-{
-    "repair_data" : [{
-        "name" : "刷石机",
-        "comment" : "TNT复制模块炸膛",
-        "fixed" : false,
-        "x" : 100,
-        "y" : 65,
-        "z" : 120
-    },
-    {
-        "name" : "盾构机",
-        "comment" : "炸膛",
-        "fixed" : true,
-        "x" : 300,
-        "y" : -15,
-        "z" : -160
-    }]
-}
+
