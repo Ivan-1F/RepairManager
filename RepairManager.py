@@ -107,6 +107,12 @@ def show_list(server, player):
         # server.tell(info.player, " - " + data[i]["name"] + "   §7" + data[i]["comment"])
 
 def add_successful_info(dim, pos_x, pos_y, pos_z):
+    global global_server
+    global global_info
+
+    server = global_server
+    info = global_info
+
     if dim == 0:
         server.reply(info, "已在 §2主世界§r [x:{} ,y:{} ,z:{}] 创建了报修".format(pos_x, pos_y, pos_z))
     elif dim == -1:
@@ -114,9 +120,13 @@ def add_successful_info(dim, pos_x, pos_y, pos_z):
     elif dim == 1:
         server.reply(info, "已在 §5末地§r [x:{} ,y:{} ,z:{}] 创建了报修".format(pos_x, pos_y, pos_z))
 
+def fix(name):
+    global global_server
+    server = global_server
+
 
 def on_load(server,module):
-    server.add_help_message("一个用于报修机器故障的插件")
+    server.add_help_message(Prefix, "一个用于报修机器故障的插件")
     
 def on_info(server, info):
     global global_server
@@ -183,6 +193,5 @@ def on_info(server, info):
                 add_successful_info(dim, pos_x, pos_y, pos_z)
         else:
             server.reply(info, format_error)
-
 
         return
