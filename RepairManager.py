@@ -45,7 +45,12 @@ def save_data():
 
 def add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed):
     global data
-
+    load_data()
+    new = {"name" : name, "comment" : comment,
+           "pos_x" : pos_x, "pos_y" : pos_y,
+           "pos_z" : pos_z, "dim" : dim, "fixed" : fixed}
+    data.append(new)
+    save_data()
 
 def show_detail(name):
     global global_server
@@ -68,9 +73,9 @@ def show_detail(name):
 
     comment = data[arr_pos]["comment"]
     fixed = data[arr_pos]["fixed"]
-    pos_x = data[arr_pos]["x"]
-    pos_y = data[arr_pos]["y"]
-    pos_z = data[arr_pos]["z"]
+    pos_x = data[arr_pos]["pos_x"]
+    pos_y = data[arr_pos]["pos_y"]
+    pos_z = data[arr_pos]["pos_z"]
     dim = data[arr_pos]["dim"]
     # server.say(data)
 
@@ -134,16 +139,21 @@ def on_info(server, info):
     if splited_content[1] == "add":
         if len(splited_content) == 8:
             if splited_content[4].isdigit() and splited_content[5].isdigit() and \
-                    splited_content[6].isdigit() and splited_content[7].isdigit():
-                # Format Correct
-                server.reply(info, "正在添加……")
-                name = splited_content[2]
-                comment = splited_content[3]
-                pos_x = splited_content[4]
-                pos_y = splited_content[5]
-                pos_z = splited_content[6]
-                dim = splited_content[7]
-                fixed = False
+                    splited_content[6].isdigit():
+                if splited_content[7] == "1" or splited_content[7] == "-1" or splited_content[7] == "0":
+                    # Format Correct
+                    name = splited_content[2]
+                    comment = splited_content[3]
+                    pos_x = float(splited_content[4])
+                    pos_y = float(splited_content[5])
+                    pos_z = float(splited_content[6])
+                    dim = int(splited_content[7])
+                    fixed = False
+                    add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed)
+                    server.reply(info, "§a数据添加成功§r")
+                else:
+                    server.reply(info, format_error)
+
             else:
                 server.reply(info, format_error)
                 return
@@ -152,6 +162,10 @@ def on_info(server, info):
                 server.reply(info, format_error)
             else:
                 # Format Correct
+                server.reply("here")
+
+        else:
+            server.reply(info, format_error)
 
 
         return
