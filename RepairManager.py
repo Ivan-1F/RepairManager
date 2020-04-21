@@ -4,6 +4,8 @@ import stext as st
 
 help_msg = '''------MCDR RepairManager插件------
 §a命令帮助如下:§r
+§6!!repair§r 显示报修列表（未修复）
+§6!!repair fixed§r 显示报修列表（已修复）
 §6!!repair help§r 显示帮助信息
 §6!!repair add <name> <comment> here§r 在当前位置添加一个名为name的报修
 §6!!repair add <name> <comment> [<position>]§r
@@ -13,7 +15,7 @@ help_msg = '''------MCDR RepairManager插件------
 §6!!repair detail <name>§r 显示name的详细信息
 §6!!repair fix <name>§r 标记name为已修复
 §6!!repair unfix <name>§r 标记name为未修复
-§6!!repair rename <name>§r 标记name为未修复
+§6!!repair rename <name> <new_name>§r 重命名
 §6!!repair modify <name> <comment>§r 修改name的注释为comment
 --------------------------------'''
 format_error = "§c格式错误，请输入§6!!repair help§c查看帮助信息§r"
@@ -179,6 +181,24 @@ def unfix(name):
             else:
                 server.reply(info, "§c这项报修还未被修复！§r")
 
+def rename(name, newname):
+    global global_server
+    global global_info
+    global data
+    load_data()
+    server = global_server
+    info = global_info
+    if(name == newname):
+        server.reply(info, "§c新名称与旧名称相同！§r")
+        return
+    for i in range(0, len(data)):
+        if (data[i]["name"] == name):
+            data[i]["name"] = newname
+            server.reply(info, "§a成功将§6" + name + "§a重命名为§6" + newname + "§r")
+            save_data()
+            return
+    server.reply(info, "§c未找到§6" + name)
+
 
 def on_load(server,module):
     server.add_help_message(Prefix, "一个用于报修机器故障的插件")
@@ -269,4 +289,11 @@ def on_info(server, info):
             server.reply(info, format_error)
             return
         unfix(splited_content[2])
+        return
+
+    if splited_content[1] == "rename":
+        if len(splited_content) != 4:
+            server.reply(info, format_error)
+            return
+        rename(splited_content[2], splited_content[3])
         return
