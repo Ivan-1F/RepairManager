@@ -54,12 +54,27 @@ def add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed):
     data.append(new)
     save_data()
 
+def delete_data(name):
+    global data
+    load_data()
+    # print(data)
+    length = len(data)
+    # print(length)
+    for i in range(0, length):
+        if data[i]["name"] == name:
+            del data[i]
+            save_data()
+            return 1
+    return 0
+
 def show_detail(name):
     global global_server
     global global_info
     global data
     server = global_server
     info = global_info
+
+    player = info.player
 
     load_data()
 
@@ -94,6 +109,28 @@ def show_detail(name):
         server.reply(info, "是否修复 : §2True§r")
     else:
         server.reply(info, "是否修复 : §4False§r")
+
+    delete_btn = st.SText("删除这项报修", color=st.SColor.red)
+    delete_btn.styles = [st.SStyle.bold]
+    delete_btn.hover_text = st.SText("点击删除")
+    command = "!!repair del " + name
+    delete_btn.set_click_command(command)
+    st.show_to_player(server, player, delete_btn)
+
+    if not fixed:
+        fix_btn = st.SText("标记为已维修", color=st.SColor.green)
+        fix_btn.styles = [st.SStyle.bold]
+        fix_btn.hover_text = st.SText("点击以标记为已维修")
+        command = "!!repair fix " + name
+        fix_btn.set_click_command(command)
+        st.show_to_player(server, player, fix_btn)
+    else:
+        unfix_btn = st.SText("标记为未维修", color=st.SColor.green)
+        unfix_btn.styles = [st.SStyle.bold]
+        unfix_btn.hover_text = st.SText("点击以标记为未维修")
+        command = "!!repair unfix " + name
+        unfix_btn.set_click_command(command)
+        st.show_to_player(server, player, unfix_btn)
 
 def show_fixed_list():
     global global_server
@@ -284,13 +321,18 @@ def on_info(server, info):
                 # Format Correct
                 # here
                 PlayerInfoAPI = server.get_plugin_instance('PlayerInfoAPI')
-                result = PlayerInfoAPI.getPlayerInfo(server, info.player)
+                # server.say(PlayerInfoAPI)
+                # result = PlayerInfoAPI.getPlayerInfo(server, info.player)
                 name = splited_content[2]
                 comment = splited_content[3]
-                dim = result["Dimension"]
-                pos_x = int(result["Pos"][0])
-                pos_y = int(result["Pos"][1])
-                pos_z = int(result["Pos"][2])
+                # dim = result["Dimension"]
+                # pos_x = int(result["Pos"][0])
+                # pos_y = int(result["Pos"][1])
+                # pos_z = int(result["Pos"][2])
+                dim = PlayerInfoAPI.getPlayerInfo(server, info.player, "Dimension")
+                pos_x = int(PlayerInfoAPI.getPlayerInfo(server, info.player, "Pos")[0])
+                pos_y = int(PlayerInfoAPI.getPlayerInfo(server, info.player, "Pos")[1])
+                pos_z = int(PlayerInfoAPI.getPlayerInfo(server, info.player, "Pos")[2])
                 fixed = False
                 add_data(name, comment, pos_x, pos_y, pos_z, dim, fixed)
                 global_info = info
@@ -332,3 +374,13 @@ def on_info(server, info):
             return
         modify(splited_content[2], splited_content[3])
         return
+
+    if splited_content[1] == "del":
+        if len(splited_content) != 3:
+            server.reply(info, format_error)
+            return
+        delete_data(splited_content[2])
+        server.reply(info, "§a删除成功！§r")
+        return
+
+
